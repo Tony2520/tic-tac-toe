@@ -1,5 +1,12 @@
-function playerFactor() {
-  return null
+function playerFactor(n,m) {
+  let score = 0;
+  const marker = m;
+  const name = n;
+
+  const move = (index,board) => {
+    return board.setBoard(index,marker);
+  }
+  return {name, move, marker}
 }
 
 const gameBoard = (() => {
@@ -39,7 +46,6 @@ const gameBoard = (() => {
         return v[0]
       }
     }
-
     if (board[4] != 0 && ((board[0] == board[4] && board == board[8]) || 
     (board[2] == board[4] && board[4] == board[6]))) {
       return board[4]
@@ -47,11 +53,22 @@ const gameBoard = (() => {
     return false
   }
 
-  return { getBoard, setBoard, checkBoard }
+  const resetBoard = () => {
+    board = [
+      0,0,0,
+      0,0,0,
+      0,0,0,
+    ]
+  }
+
+  return { getBoard, setBoard, checkBoard, resetBoard }
 })();
 
 const displayController = (()=>{
   // const boxes = document.querySelectorAll('.square')
+  
+
+
   const indexConvert = (id) => {
     if (typeof(id) == 'string') {
       return id.charCodeAt(0) - 'a'.charCodeAt(0);
@@ -62,18 +79,42 @@ const displayController = (()=>{
 
   const renderBoard = (board) => {
     for (let i = 0; i < 9; i++) {
-      if (board.getBoard()[i]) {
-        const box = document.querySelector(`#${indexConvert(i)}`);
-        box.textContent = board.getBoard()[i]
-      }
+      const box = document.querySelector(`#${indexConvert(i)}`);
+      box.textContent = board.getBoard()[i] ? board.getBoard()[i] : ''
+
     }
    }
-   return { renderBoard, }
+   return { renderBoard, indexConvert}
 })()
 
+function checkWin() {
+  const status = gameBoard.checkBoard()
+  if (!status) return false
+  for(player of players) {
+    if (player.marker == status) {
+      alert(`Player ${player.name} won!`)
+      return true
+    }
+  }
+  alert("It's a tie!")
+  return true
+}
 
-displayController.renderBoard(gameBoard)
+
+const players = [playerFactor('a', 'X'), playerFactor('b','O')]
+let moves = 0;
+let p = players[moves % 2]
+const squares = document.querySelectorAll('.square')
+squares.forEach(s => {s.addEventListener('click', () => {
+  p.move(displayController.indexConvert(s.id), gameBoard)
+  displayController.renderBoard(gameBoard)
+  moves += 1
+  p = players[moves % 2]
+  if (checkWin()) {
+    gameBoard.resetBoard()
+    displayController.renderBoard(gameBoard)
+  }
+})})
 
 
 
-console.log(gameBoard.checkBoard())
