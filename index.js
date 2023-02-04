@@ -22,10 +22,9 @@ const gameBoard = (() => {
   }
 
   const checkBoard = () => {
-    if (!board.includes(0)) {
+    if (board.every((i) => {return i != 0})) {
       return 'Tie'
     }
-
     for (let i = 0; i < 3; i++) {
       // horizontal & vertical check
       const h = [];
@@ -34,9 +33,9 @@ const gameBoard = (() => {
         h.push(board[i*3 + r])
         v.push(board[r*3 + i])
       }
-      if (h[0] && h.allEqual()) {
+      if (h[0] && h.every((i) => {return i == h[0]})) {
         return h[0]
-      } else if (v[0] && v.allEqual()) {
+      } else if (v[0] && v.every((i) => {return i == v[0]})) {
         return v[0]
       }
     }
@@ -47,12 +46,6 @@ const gameBoard = (() => {
     } 
     return false
   }
-  
-  board = [
-    0, 0, 0,
-    1, 1, 1,
-    0, 0, 0,
-  ]
 
   return { getBoard, setBoard, checkBoard }
 })();
